@@ -1,3 +1,4 @@
+#nltk toolikit- VADER is used
 import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
 
