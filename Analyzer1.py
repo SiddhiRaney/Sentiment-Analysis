@@ -2,17 +2,13 @@
 import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
 
-# Download vader_lexicon if not already done
-nltk.download('vader_lexicon')
-
-# Initialize the VADER sentiment analyzer
 sia = SentimentIntensityAnalyzer()
 
+#Comment is any piece of text/information for which we want to analyze the sentiment
 def analyze_sentiment(comment):
-    # Analyze sentiment using VADER
     sentiment_scores = sia.polarity_scores(comment)
 
-    # Interpret the sentiment
+    # Interpreting the sentiment
     if sentiment_scores['compound'] >= 0.05:
         sentiment = 'Positive'
     elif sentiment_scores['compound'] <= -0.05:
@@ -25,7 +21,6 @@ def analyze_sentiment(comment):
 
     return sentiment, sarcasm_detection, sentiment_scores['compound']
 
-# User Input Loop
 while True:
     comment = input("Enter a comment: ")
     
