@@ -43,5 +43,5 @@ while True:
     continue_input = input("Do you want to continue (Y/N)? ").strip().lower()
 
     if continue_input != 'y':
-        print("Exiting the program. Goodbye!")
+        print("Exiting the program......")
         break
