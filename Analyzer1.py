@@ -1,47 +1,71 @@
-# nltk toolkit - VADER is used
 import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
 
+# Initialize SentimentIntensityAnalyzer
 sia = SentimentIntensityAnalyzer()
 
-# Comment is any piece of text/information for which we want to analyze the sentiment
+# Function to analyze sentiment
 def analyze_sentiment(comment):
     sentiment_scores = sia.polarity_scores(comment)
 
-    # The compound score is a single value that combines the positive, negative, and neutral scores
-    # into a normalized value ranging from -1 (most negative) to +1 (most positive).
-
-    # If the compound score is greater than or equal to 0.05, the overall sentiment is considered Positive.
-    if sentiment_scores['compound'] >= 0.05:
+    # Determine the general sentiment based on compound score
+    compound = sentiment_scores['compound']
+    if compound >= 0.05:
         sentiment = 'Positive'
-
-    # If the compound score is less than or equal to -0.05, the overall sentiment is considered Negative.
-    elif sentiment_scores['compound'] <= -0.05:
+    elif compound <= -0.05:
         sentiment = 'Negative'
-
-    # If the compound score falls between -0.05 and 0.05, the overall sentiment is considered Neutral.
     else:
         sentiment = 'Neutral'
 
-    # Check if the tone is sarcastic based on sentiment polarity score and context
-    sarcasm_detection = 'Sarcastic' if 'not' in comment or 'sure' in comment else 'Not Sarcastic'
+    # Determine tone based on sentiment and specific scores
+    tone = determine_tone(sentiment_scores)
 
-    return sentiment, sarcasm_detection, sentiment_scores['compound']
+    # Detect sarcasm (basic heuristic)
+    sarcasm_detection = 'Sarcastic' if 'not' in comment.lower() or 'sure' in comment.lower() else 'Not Sarcastic'
 
-while True:
-    comment = input("Enter a comment: ")
+    return sentiment, tone, sarcasm_detection, compound
 
-    sentiment, sarcasm, compound_score = analyze_sentiment(comment)
+# Function to determine tone
+def determine_tone(scores):
+    if scores['pos'] > 0.7:
+        return 'Excited'
+    elif scores['neg'] > 0.7:
+        return 'Angry'
+    elif scores['neu'] > 0.9:
+        return 'Calm'
+    elif scores['pos'] > scores['neg']:
+        return 'Happy'
+    elif scores['neg'] > scores['pos']:
+        return 'Sad'
+    else:
+        return 'Mixed'
 
-    # Output Results
-    print(f"\nComment: {comment}")
-    print(f"Sentiment: {sentiment}")
-    print(f"Sarcasm Detection: {sarcasm}")
-    print(f"Sentiment Score: {compound_score:.2f}\n")
+# Main loop
+def main():
+    while True:
+        comment = input("Enter a comment: ").strip()
+        
+        # Validate input
+        if not comment:
+            print("Please enter a valid comment!")
+            continue
 
-    # Ask if the user wants to continue or break
-    continue_input = input("Do you want to continue (Y/N)? ").strip().lower()
+        # Analyze the comment
+        sentiment, tone, sarcasm, compound_score = analyze_sentiment(comment)
 
-    if continue_input != 'y':
-        print("Exiting the program......")
-        break
+        # Output results
+        print(f"\nComment: {comment}")
+        print(f"General Sentiment: {sentiment}")
+        print(f"Tone: {tone}")
+        print(f"Sarcasm Detection: {sarcasm}")
+        print(f"Sentiment Score (Compound): {compound_score:.2f}\n")
+
+        # Ask if the user wants to continue
+        continue_input = input("Do you want to continue (Y/N)? ").strip().lower()
+        if continue_input != 'y':
+            print("Exiting the program...")
+            break
+
+# Run the program
+if __name__ == "__main__":
+    main()
