@@ -1,62 +1,91 @@
 import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
 import textwrap
+import re
 
-# Initialize SentimentIntensityAnalyzer once
+# Initialize SentimentIntensityAnalyzer
 sia = SentimentIntensityAnalyzer()
 
 # Function to analyze sentiment
 def analyze_sentiment(comment):
+    """
+    Analyze the sentiment of a given comment using NLTK's SentimentIntensityAnalyzer.
+    Returns a dictionary containing sentiment, tone, sarcasm, and score breakdown.
+    """
     try:
         sentiment_scores = sia.polarity_scores(comment)
         compound = sentiment_scores['compound']
         
-        # Determine general sentiment
-        if compound >= 0.05:
-            sentiment = 'Positive'
-        elif compound <= -0.05:
-            sentiment = 'Negative'
-        else:
-            sentiment = 'Neutral'
-
-        # Determine tone
+        sentiment = determine_sentiment(compound)
         tone = determine_tone(sentiment_scores)
-
-        # Detect sarcasm
-        sarcasm_detection = detect_sarcasm(comment, sentiment_scores)
-
+        sarcasm = detect_sarcasm(comment, sentiment_scores)
+        
         return {
             "sentiment": sentiment,
             "tone": tone,
-            "sarcasm": sarcasm_detection,
+            "sarcasm": sarcasm,
             "scores": sentiment_scores,
         }
     except Exception as e:
         return {"error": str(e)}
 
+# Function to determine sentiment
+def determine_sentiment(compound):
+    """
+    Determine the overall sentiment based on the compound score.
+    """
+    if compound >= 0.05:
+        return 'Positive'
+    elif compound <= -0.05:
+        return 'Negative'
+    return 'Neutral'
+
 # Function to determine tone
 def determine_tone(scores):
-    if scores['pos'] > 0.7:
+    """
+    Determine the tone based on individual sentiment scores.
+    """
+    pos, neg, neu = scores['pos'], scores['neg'], scores['neu']
+    
+    if pos > 0.7:
         return 'Excited'
-    elif scores['neg'] > 0.7:
+    elif neg > 0.7:
         return 'Angry'
-    elif scores['neu'] > 0.9:
+    elif neu > 0.9:
         return 'Calm'
-    elif scores['pos'] > scores['neg']:
+    elif pos > neg:
         return 'Happy'
-    elif scores['neg'] > scores['pos']:
+    elif neg > pos:
         return 'Sad'
-    else:
-        return 'Mixed'
+    return 'Mixed'
 
 # Function to detect sarcasm
 def detect_sarcasm(comment, scores):
-    # Basic heuristic for sarcasm
-    sarcastic_keywords = ["not", "sure", "yeah right", "totally"]
+    """
+    Detect sarcasm using keywords and sentiment scores.
+    """
+    sarcastic_keywords = ["not", "sure", "yeah right", "totally", "as if"]
+    sarcastic_patterns = [r"yeah,? right", r"totally\s.*", r"as if"]
     comment_lower = comment.lower()
+
     if any(keyword in comment_lower for keyword in sarcastic_keywords):
         return 'Sarcastic'
+    if any(re.search(pattern, comment_lower) for pattern in sarcastic_patterns):
+        return 'Sarcastic'
     return 'Not Sarcastic'
+
+# Function to display results
+def display_results(comment, result):
+    """
+    Display sentiment analysis results in a clean and readable format.
+    """
+    print("\n" + "-" * 50)
+    print(f"Comment: {textwrap.fill(comment, width=50)}")
+    print(f"General Sentiment: {result['sentiment']}")
+    print(f"Tone: {result['tone']}")
+    print(f"Sarcasm Detection: {result['sarcasm']}")
+    print(f"Score Breakdown: {result['scores']}")
+    print("-" * 50 + "\n")
 
 # Main loop
 def main():
@@ -65,32 +94,18 @@ def main():
         comment = input("Enter a comment: ").strip()
         
         if not comment:
-            print("Please enter a valid comment!")
+            print("Error: Please enter a valid comment!")
             continue
 
         result = analyze_sentiment(comment)
 
-        # Handle errors
         if "error" in result:
             print(f"Error: {result['error']}")
-            continue
-
-        # Display results
-        sentiment = result['sentiment']
-        tone = result['tone']
-        sarcasm = result['sarcasm']
-        scores = result['scores']
-
-        print("\n" + "-" * 50)
-        print(f"Comment: {textwrap.fill(comment, width=50)}")
-        print(f"General Sentiment: {sentiment}")
-        print(f"Tone: {tone}")
-        print(f"Sarcasm Detection: {sarcasm}")
-        print(f"Score Breakdown: {scores}")
-        print("-" * 50 + "\n")
+        else:
+            display_results(comment, result)
 
         # Ask if the user wants to continue
-        continue_input = input("Do you want to continue (Y/N)? ").strip().lower()
+        continue_input = input("Do you want to analyze another comment? (Y/N): ").strip().lower()
         if continue_input != 'y':
             print("Exiting the program...")
             break
@@ -98,13 +113,3 @@ def main():
 # Run the program
 if __name__ == "__main__":
     main()
-
-# 1. Moved SentimentIntensityAnalyzer initialization outside functions for efficiency.
-# 2. Added try-except block in analyze_sentiment for error handling.
-# 3. Refactored sarcasm detection into a separate function for modularity.
-# 4. Enhanced sarcasm detection with a keyword list for better accuracy.
-# 5. Added input validation to ensure non-empty and meaningful comments.
-# 6. Displayed detailed sentiment score breakdown for user insights.
-# 7. Formatted long comments using textwrap for better readability.
-# 8. Improved output with separators for cleaner display.
-
