@@ -2,20 +2,27 @@ import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
 import textwrap
 import re
+from typing import Dict, Any
 
 # Initialize SentimentIntensityAnalyzer
 sia = SentimentIntensityAnalyzer()
 
-# Function to analyze sentiment
-def analyze_sentiment(comment):
+def analyze_sentiment(comment: str) -> Dict[str, Any]:
     """
     Analyze the sentiment of a given comment using NLTK's SentimentIntensityAnalyzer.
-    Returns a dictionary containing sentiment, tone, sarcasm, and score breakdown.
+    
+    Args:
+        comment (str): The input comment to analyze.
+        
+    Returns:
+        Dict[str, Any]: A dictionary containing sentiment, tone, sarcasm, and score breakdown.
     """
     try:
+        # Get sentiment scores
         sentiment_scores = sia.polarity_scores(comment)
         compound = sentiment_scores['compound']
         
+        # Determine sentiment, tone, and sarcasm
         sentiment = determine_sentiment(compound)
         tone = determine_tone(sentiment_scores)
         sarcasm = detect_sarcasm(comment, sentiment_scores)
@@ -29,10 +36,15 @@ def analyze_sentiment(comment):
     except Exception as e:
         return {"error": str(e)}
 
-# Function to determine sentiment
-def determine_sentiment(compound):
+def determine_sentiment(compound: float) -> str:
     """
     Determine the overall sentiment based on the compound score.
+    
+    Args:
+        compound (float): The compound score from sentiment analysis.
+        
+    Returns:
+        str: The overall sentiment (Positive, Negative, or Neutral).
     """
     if compound >= 0.05:
         return 'Positive'
@@ -40,10 +52,15 @@ def determine_sentiment(compound):
         return 'Negative'
     return 'Neutral'
 
-# Function to determine tone
-def determine_tone(scores):
+def determine_tone(scores: Dict[str, float]) -> str:
     """
     Determine the tone based on individual sentiment scores.
+    
+    Args:
+        scores (Dict[str, float]): A dictionary of sentiment scores (pos, neg, neu).
+        
+    Returns:
+        str: The tone of the comment.
     """
     pos, neg, neu = scores['pos'], scores['neg'], scores['neu']
     
@@ -59,10 +76,16 @@ def determine_tone(scores):
         return 'Sad'
     return 'Mixed'
 
-# Function to detect sarcasm
-def detect_sarcasm(comment, scores):
+def detect_sarcasm(comment: str, scores: Dict[str, float]) -> str:
     """
     Detect sarcasm using keywords and sentiment scores.
+    
+    Args:
+        comment (str): The input comment.
+        scores (Dict[str, float]): A dictionary of sentiment scores.
+        
+    Returns:
+        str: Indicates if the comment is sarcastic or not.
     """
     sarcastic_keywords = ["not", "sure", "yeah right", "totally", "as if"]
     sarcastic_patterns = [r"yeah,? right", r"totally\s.*", r"as if"]
@@ -74,40 +97,50 @@ def detect_sarcasm(comment, scores):
         return 'Sarcastic'
     return 'Not Sarcastic'
 
-# Function to display results
-def display_results(comment, result):
+def display_results(comment: str, result: Dict[str, Any]) -> None:
     """
     Display sentiment analysis results in a clean and readable format.
+    
+    Args:
+        comment (str): The input comment.
+        result (Dict[str, Any]): The result dictionary from sentiment analysis.
     """
     print("\n" + "-" * 50)
-    print(f"Comment: {textwrap.fill(comment, width=50)}")
+    print(f"Comment:\n{textwrap.fill(comment, width=50)}")
     print(f"General Sentiment: {result['sentiment']}")
     print(f"Tone: {result['tone']}")
     print(f"Sarcasm Detection: {result['sarcasm']}")
-    print(f"Score Breakdown: {result['scores']}")
+    print("Score Breakdown:")
+    for key, value in result['scores'].items():
+        print(f"  {key.capitalize()}: {value:.2f}")
     print("-" * 50 + "\n")
 
-# Main loop
-def main():
+def main() -> None:
+    """
+    Main function to interact with the user and perform sentiment analysis.
+    """
     print("Welcome to the Sentiment Analysis Tool!")
     while True:
-        comment = input("Enter a comment: ").strip()
-        
-        if not comment:
-            print("Error: Please enter a valid comment!")
-            continue
+        try:
+            comment = input("Enter a comment (or type 'exit' to quit): ").strip()
+            
+            if comment.lower() == 'exit':
+                print("Exiting the program...")
+                break
 
-        result = analyze_sentiment(comment)
+            if not comment:
+                print("Error: Please enter a valid comment!")
+                continue
 
-        if "error" in result:
-            print(f"Error: {result['error']}")
-        else:
-            display_results(comment, result)
+            result = analyze_sentiment(comment)
 
-        # Ask if the user wants to continue
-        continue_input = input("Do you want to analyze another comment? (Y/N): ").strip().lower()
-        if continue_input != 'y':
-            print("Exiting the program...")
+            if "error" in result:
+                print(f"Error: {result['error']}")
+            else:
+                display_results(comment, result)
+
+        except KeyboardInterrupt:
+            print("\nExiting the program...")
             break
 
 # Run the program
