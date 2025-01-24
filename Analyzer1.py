@@ -7,6 +7,7 @@ sia = SentimentIntensityAnalyzer()
 # Function to analyze sentiment
 def analyze_sentiment(comment):
     sentiment_scores = sia.polarity_scores(comment)
+    #calc
 
     # Determine the general sentiment based on compound score
     compound = sentiment_scores['compound']
