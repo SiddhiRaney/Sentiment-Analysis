@@ -8,15 +8,7 @@ from typing import Dict, Any
 sia = SentimentIntensityAnalyzer()
 
 def analyze_sentiment(comment: str) -> Dict[str, Any]:
-    """
-    Analyze the sentiment of a given comment using NLTK's SentimentIntensityAnalyzer.
-    
-    Args:
-        comment (str): The input comment to analyze.
-        
-    Returns:
-        Dict[str, Any]: A dictionary containing sentiment, tone, sarcasm, and score breakdown.
-    """
+   
     try:
         # Get sentiment scores
         sentiment_scores = sia.polarity_scores(comment)
@@ -77,16 +69,7 @@ def determine_tone(scores: Dict[str, float]) -> str:
     return 'Mixed'
 
 def detect_sarcasm(comment: str, scores: Dict[str, float]) -> str:
-    """
-    Detect sarcasm using keywords and sentiment scores.
-    
-    Args:
-        comment (str): The input comment.
-        scores (Dict[str, float]): A dictionary of sentiment scores.
-        
-    Returns:
-        str: Indicates if the comment is sarcastic or not.
-    """
+   
     sarcastic_keywords = ["not", "sure", "yeah right", "totally", "as if"]
     sarcastic_patterns = [r"yeah,? right", r"totally\s.*", r"as if"]
     comment_lower = comment.lower()
@@ -116,9 +99,7 @@ def display_results(comment: str, result: Dict[str, Any]) -> None:
     print("-" * 50 + "\n")
 
 def main() -> None:
-    """
-    Main function to interact with the user and perform sentiment analysis.
-    """
+   
     print("Welcome to the Sentiment Analysis Tool!")
     while True:
         try:
