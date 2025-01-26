@@ -6,47 +6,58 @@ sia = SentimentIntensityAnalyzer()
 
 # Function to analyze sentiment
 def analyze_sentiment(comment):
-    sentiment_scores = sia.polarity_scores(comment)
-    #calc
+    scores = sia.polarity_scores(comment)
 
-    # Determine the general sentiment based on compound score
-    compound = sentiment_scores['compound']
-    if compound >= 0.05:
+    # Determine the general sentiment based on the compound score
+    compound_score = scores['compound']
+    if compound_score >= 0.05:
         sentiment = 'Positive'
-    elif compound <= -0.05:
+    elif compound_score <= -0.05:
         sentiment = 'Negative'
     else:
         sentiment = 'Neutral'
 
-    # Determine tone based on sentiment and specific scores
-    tone = determine_tone(sentiment_scores)
+    # Determine tone based on sentiment scores
+    tone = determine_tone(scores)
 
     # Detect sarcasm (basic heuristic)
-    sarcasm_detection = 'Sarcastic' if 'not' in comment.lower() or 'sure' in comment.lower() else 'Not Sarcastic'
+    sarcasm = detect_sarcasm(comment)
 
-    return sentiment, tone, sarcasm_detection, compound
+    return sentiment, tone, sarcasm, compound_score
 
 # Function to determine tone
 def determine_tone(scores):
-    if scores['pos'] > 0.7:
+    pos, neg, neu = scores['pos'], scores['neg'], scores['neu']
+    
+    if pos > 0.7:
         return 'Excited'
-    elif scores['neg'] > 0.7:
+    elif neg > 0.7:
         return 'Angry'
-    elif scores['neu'] > 0.9:
+    elif neu > 0.9:
         return 'Calm'
-    elif scores['pos'] > scores['neg']:
+    elif pos > neg:
         return 'Happy'
-    elif scores['neg'] > scores['pos']:
+    elif neg > pos:
         return 'Sad'
     else:
         return 'Mixed'
 
+# Function to detect sarcasm
+def detect_sarcasm(comment):
+    sarcasm_keywords = ['not', 'sure', 'yeah right', 'totally']
+    return 'Sarcastic' if any(keyword in comment.lower() for keyword in sarcasm_keywords) else 'Not Sarcastic'
+
 # Main loop
 def main():
+    print("Sentiment Analysis Program\nType your comments and receive sentiment insights.\n")
+    
     while True:
-        comment = input("Enter a comment: ").strip()
+        comment = input("Enter a comment (or type 'exit' to quit): ").strip()
         
-        # Validate input
+        if comment.lower() == 'exit':
+            print("Exiting the program...")
+            break
+        
         if not comment:
             print("Please enter a valid comment!")
             continue
@@ -62,9 +73,9 @@ def main():
         print(f"Sentiment Score (Compound): {compound_score:.2f}\n")
 
         # Ask if the user wants to continue
-        continue_input = input("Do you want to continue (Y/N)? ").strip().lower()
+        continue_input = input("Do you want to analyze another comment (Y/N)? ").strip().lower()
         if continue_input != 'y':
-            print("Exiting the program...")
+            print("Thank you for using the program!")
             break
 
 # Run the program
