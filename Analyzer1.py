@@ -2,33 +2,25 @@ import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
 
 # Initialize SentimentIntensityAnalyzer
+nltk.download('vader_lexicon')
 sia = SentimentIntensityAnalyzer()
 
 # Function to analyze sentiment
 def analyze_sentiment(comment):
     scores = sia.polarity_scores(comment)
-
-    # Determine the general sentiment based on the compound score
     compound_score = scores['compound']
-    if compound_score >= 0.05:
-        sentiment = 'Positive'
-    elif compound_score <= -0.05:
-        sentiment = 'Negative'
-    else:
-        sentiment = 'Neutral'
-
-    # Determine tone based on sentiment scores
+    sentiment = (
+        'Positive' if compound_score >= 0.05
+        else 'Negative' if compound_score <= -0.05
+        else 'Neutral'
+    )
     tone = determine_tone(scores)
-
-    # Detect sarcasm (basic heuristic)
     sarcasm = detect_sarcasm(comment)
-
     return sentiment, tone, sarcasm, compound_score
 
 # Function to determine tone
 def determine_tone(scores):
     pos, neg, neu = scores['pos'], scores['neg'], scores['neu']
-    
     if pos > 0.7:
         return 'Excited'
     elif neg > 0.7:
@@ -62,17 +54,17 @@ def main():
             print("Please enter a valid comment!")
             continue
 
-        # Analyze the comment
-        sentiment, tone, sarcasm, compound_score = analyze_sentiment(comment)
+        try:
+            sentiment, tone, sarcasm, compound_score = analyze_sentiment(comment)
+            print(f"\nComment: {comment}")
+            print(f"General Sentiment: {sentiment}")
+            print(f"Tone: {tone}")
+            print(f"Sarcasm Detection: {sarcasm}")
+            print(f"Sentiment Score (Compound): {compound_score:.2f}\n")
+        except Exception as e:
+            print(f"Error analyzing the comment: {e}")
+            continue
 
-        # Output results
-        print(f"\nComment: {comment}")
-        print(f"General Sentiment: {sentiment}")
-        print(f"Tone: {tone}")
-        print(f"Sarcasm Detection: {sarcasm}")
-        print(f"Sentiment Score (Compound): {compound_score:.2f}\n")
-
-        # Ask if the user wants to continue
         continue_input = input("Do you want to analyze another comment (Y/N)? ").strip().lower()
         if continue_input != 'y':
             print("Thank you for using the program!")
