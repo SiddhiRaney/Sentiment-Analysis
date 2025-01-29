@@ -12,15 +12,14 @@ def analyze_sentiment(comment):
     sentiment_scores = sia.polarity_scores(comment)
 
     # Interpret the sentiment
-    if sentiment_scores['compound'] >= 0.05:
-        sentiment = 'Positive'
-    elif sentiment_scores['compound'] <= -0.05:
-        sentiment = 'Negative'
-    else:
-        sentiment = 'Neutral'
+    sentiment = (
+        'Positive' if sentiment_scores['compound'] >= 0.05 else
+        'Negative' if sentiment_scores['compound'] <= -0.05 else
+        'Neutral'
+    )
 
-    # Check if the tone is sarcastic based on sentiment polarity score and context
-    sarcasm_detection = 'Sarcastic' if 'not' in comment or 'sure' in comment else 'Not Sarcastic'
+    # Check if the tone is sarcastic based on certain keywords
+    sarcasm_detection = 'Sarcastic' if any(word in comment for word in ['not', 'sure']) else 'Not Sarcastic'
 
     return sentiment, sarcasm_detection, sentiment_scores['compound']
 
@@ -37,8 +36,6 @@ while True:
     print(f"Sentiment Score: {compound_score:.2f}\n")
 
     # Ask if the user wants to continue or break
-    continue_input = input("Do you want to continue (Y/N)? ").strip().lower()
-    
-    if continue_input != 'y':
+    if input("Do you want to continue (Y/N)? ").strip().lower() != 'y':
         print("Exiting the program. Goodbye!")
         break
