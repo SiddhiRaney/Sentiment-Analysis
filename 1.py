@@ -1,5 +1,6 @@
 import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
+import re
 
 # Download vader_lexicon if not already done
 nltk.download('vader_lexicon')
@@ -18,8 +19,8 @@ def analyze_sentiment(comment):
         'Neutral'
     )
 
-    # Check if the tone is sarcastic based on certain keywords
-    sarcasm_detection = 'Sarcastic' if any(word in comment for word in ['not', 'sure']) else 'Not Sarcastic'
+    # Check for sarcasm using regex for patterns like "not sure"
+    sarcasm_detection = 'Sarcastic' if re.search(r'\b(not|no|never|barely|hardly|don\'t)\b', comment, re.IGNORECASE) else 'Not Sarcastic'
 
     return sentiment, sarcasm_detection, sentiment_scores['compound']
 
