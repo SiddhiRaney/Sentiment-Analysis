@@ -1,75 +1,67 @@
 import nltk
-from nltk.sentiment import SentimentIntensityAnalyzer
 import textwrap
 import re
 from typing import Dict, Any
+from transformers import pipeline
 
-# Initialize SentimentIntensityAnalyzer
-sia = SentimentIntensityAnalyzer()
+# Initialize Hugging Face sentiment analysis pipeline
+sentiment_analysis_pipeline = pipeline("sentiment-analysis")
 
 def analyze_sentiment(comment: str) -> Dict[str, Any]:
-   
     try:
-        # Get sentiment scores
-        sentiment_scores = sia.polarity_scores(comment)
-        compound = sentiment_scores['compound']
-        
+        # Get sentiment scores using Hugging Face model
+        sentiment_result = sentiment_analysis_pipeline(comment)[0]
+        label = sentiment_result['label']
+        score = sentiment_result['score']
+
         # Determine sentiment, tone, and sarcasm
-        sentiment = determine_sentiment(compound)
-        tone = determine_tone(sentiment_scores)
-        sarcasm = detect_sarcasm(comment, sentiment_scores)
+        sentiment = determine_sentiment(label)
+        tone = determine_tone(label, score)
+        sarcasm = detect_sarcasm(comment, label)
         
         return {
             "sentiment": sentiment,
             "tone": tone,
             "sarcasm": sarcasm,
-            "scores": sentiment_scores,
+            "score": {"label": label, "score": score},
         }
     except Exception as e:
         return {"error": str(e)}
 
-def determine_sentiment(compound: float) -> str:
+def determine_sentiment(label: str) -> str:
     """
-    Determine the overall sentiment based on the compound score.
+    Determine the overall sentiment based on the label (positive/negative).
     
     Args:
-        compound (float): The compound score from sentiment analysis.
+        label (str): The sentiment label ('POSITIVE' or 'NEGATIVE').
         
     Returns:
-        str: The overall sentiment (Positive, Negative, or Neutral).
+        str: The overall sentiment.
     """
-    if compound >= 0.05:
+    if label == 'POSITIVE':
         return 'Positive'
-    elif compound <= -0.05:
+    elif label == 'NEGATIVE':
         return 'Negative'
     return 'Neutral'
 
-def determine_tone(scores: Dict[str, float]) -> str:
+def determine_tone(label: str, score: float) -> str:
     """
-    Determine the tone based on individual sentiment scores.
+    Determine the tone based on sentiment label and score.
     
     Args:
-        scores (Dict[str, float]): A dictionary of sentiment scores (pos, neg, neu).
+        label (str): Sentiment label ('POSITIVE' or 'NEGATIVE').
+        score (float): The confidence score of the sentiment.
         
     Returns:
         str: The tone of the comment.
     """
-    pos, neg, neu = scores['pos'], scores['neg'], scores['neu']
-    
-    if pos > 0.7:
+    if label == 'POSITIVE' and score > 0.9:
         return 'Excited'
-    elif neg > 0.7:
+    elif label == 'NEGATIVE' and score > 0.9:
         return 'Angry'
-    elif neu > 0.9:
-        return 'Calm'
-    elif pos > neg:
-        return 'Happy'
-    elif neg > pos:
-        return 'Sad'
-    return 'Mixed'
+    return 'Neutral'
 
-def detect_sarcasm(comment: str, scores: Dict[str, float]) -> str:
-   
+def detect_sarcasm(comment: str, label: str) -> str:
     sarcastic_keywords = ["not", "sure", "yeah right", "totally", "as if"]
     sarcastic_patterns = [r"yeah,? right", r"totally\s.*", r"as if"]
     comment_lower = comment.lower()
@@ -94,12 +86,11 @@ def display_results(comment: str, result: Dict[str, Any]) -> None:
     print(f"Tone: {result['tone']}")
     print(f"Sarcasm Detection: {result['sarcasm']}")
     print("Score Breakdown:")
-    for key, value in result['scores'].items():
+    for key, value in result['score'].items():
         print(f"  {key.capitalize()}: {value:.2f}")
     print("-" * 50 + "\n")
 
 def main() -> None:
-   
     print("Welcome to the Sentiment Analysis Tool!")
     while True:
         try:
