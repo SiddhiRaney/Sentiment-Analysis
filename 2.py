@@ -14,15 +14,11 @@ def analyze_sentiment(comment):
     compound_score = sentiment_scores['compound']
 
     # Classify sentiment
-    if compound_score >= 0.05:
-        sentiment = 'Positive'
-    elif compound_score <= -0.05:
-        sentiment = 'Negative'
-    else:
-        sentiment = 'Neutral'
+    sentiment = ('Positive' if compound_score >= 0.05 else
+                 'Negative' if compound_score <= -0.05 else 'Neutral')
 
-    # Improved sarcasm detection using regex
-    sarcasm_patterns = r'\b(?:not sure|oh great|yeah right|totally|just perfect|as if)\b'
+    # Enhanced sarcasm detection
+    sarcasm_patterns = r'\b(?:not sure|oh great|yeah right|totally|just perfect|as if|sure thing|love that|so fun)\b'
     sarcasm_detected = 'Sarcastic' if re.search(sarcasm_patterns, comment, re.IGNORECASE) else 'Not Sarcastic'
 
     return sentiment, sarcasm_detected, compound_score
@@ -30,11 +26,14 @@ def analyze_sentiment(comment):
 def main():
     """Runs the sentiment analysis loop for user input."""
     while True:
-        comment = input("\nEnter a comment: ").strip()
+        comment = input("\nEnter a comment (or type 'exit' to quit): ").strip()
         
         if not comment:
             print("Empty input detected. Please enter a valid comment.")
             continue
+        if comment.lower() == 'exit':
+            print("Exiting the program. Goodbye!")
+            break
 
         sentiment, sarcasm, score = analyze_sentiment(comment)
         
@@ -43,12 +42,6 @@ def main():
         print(f"Sentiment: {sentiment}")
         print(f"Sarcasm Detection: {sarcasm}")
         print(f"Sentiment Score: {score:.2f}\n")
-
-        # Continue or exit
-        choice = input("Do you want to analyze another comment? (Y/N): ").strip().lower()
-        if choice != 'y':
-            print("Exiting the program. Goodbye!")
-            break
 
 if __name__ == "__main__":
     main()
