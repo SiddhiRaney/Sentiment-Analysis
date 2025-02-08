@@ -3,48 +3,67 @@ from nltk.sentiment import SentimentIntensityAnalyzer
 import re
 
 # Download vader_lexicon if not already done
-nltk.download('vader_lexicon')
+nltk.download('vader_lexicon', quiet=True)
 
 # Initialize the VADER sentiment analyzer
 sia = SentimentIntensityAnalyzer()
 
 def analyze_sentiment(comment):
-    # Analyze sentiment using VADER
+    """Analyzes sentiment and detects sarcasm in a given comment."""
     sentiment_scores = sia.polarity_scores(comment)
     
-    # Sentiment interpretation based on compound score
-    sentiment = 'Positive' if sentiment_scores['compound'] >= 0.05 else \
-               'Negative' if sentiment_scores['compound'] <= -0.05 else \
-               'Neutral'
+    # Determine sentiment based on compound score
+    compound = sentiment_scores['compound']
+    sentiment = 'Positive' if compound >= 0.05 else 'Negative' if compound <= -0.05 else 'Neutral'
     
-    # Sarcasm detection with a broader pattern set
-    sarcasm_keywords = r'\b(not|no|never|barely|hardly|don\'t|isn\'t|won\'t|can\'t)\b'
-    sarcasm_detection = 'Sarcastic' if re.search(sarcasm_keywords, comment, re.IGNORECASE) else 'Not Sarcastic'
+    # Improved sarcasm detection using common sarcastic phrases and negations
+    sarcasm_patterns = [
+        r'(?i)not\s+(great|good|bad|terrible|happy|sad|funny)',  # Example: "Not great at all"
+        r'(?i)yeah\s+right',  # Example: "Yeah, right!"
+        r'(?i)sure\s+thing',  # Example: "Sure thing..."
+        r'(?i)totally\s+(agree|disagree|true|false)',  # Example: "Totally agree with you (not)"
+        r'(?i)as\s+if',  # Example: "As if that would happen!"
+        r'(?i)oh\s+really',  # Example: "Oh really? (with sarcasm)"
+        r'(?i)wow\s+(amazing|incredible|fantastic)',  # Example: "Wow, amazing work (sarcastic)"
+        r'(?i)just\s+what\s+I\s+needed',  # Example: "Just what I needed!"
+        r'(?i)so\s+much\s+fun',  # Example: "This is so much fun... (sarcastic)"
+        r'(?i)love\s+that\s+for\s+me',  # Example: "Love that for me!"
+    ]
+    sarcasm_detected = any(re.search(pattern, comment) for pattern in sarcasm_patterns)
+    sarcasm = 'Sarcastic' if sarcasm_detected else 'Not Sarcastic'
+    
+    return sentiment, sarcasm, compound, sentiment_scores
 
-    return sentiment, sarcasm_detection, sentiment_scores['compound']
-
-# User Input Loop
 def main():
+    """Runs an interactive user input loop for sentiment analysis."""
+    print("Welcome to the Sentiment and Sarcasm Analyzer! Enter your comments below.")
+    print("Type 'exit' to quit the program.")
+    
     while True:
         comment = input("Enter a comment: ").strip()
-        
-        if not comment:  # Check if the input is empty
+        if comment.lower() == 'exit':
+            print("Exiting the program. Goodbye!")
+            break
+        if not comment:
             print("Please enter a valid comment.")
             continue
         
-        sentiment, sarcasm, compound_score = analyze_sentiment(comment)
+        sentiment, sarcasm, compound_score, scores = analyze_sentiment(comment)
         
-        # Output Results
-        print(f"\nComment: {comment}")
+        print("\n============================")
+        print(f"Comment: {comment}")
         print(f"Sentiment: {sentiment}")
         print(f"Sarcasm Detection: {sarcasm}")
-        print(f"Sentiment Score: {compound_score:.2f}\n")
-
-        # Ask if the user wants to continue or break
-        if input("Do you want to continue (Y/N)? ").strip().lower() != 'y':
+        print(f"Sentiment Score: {compound_score:.2f}")
+        print("Detailed Scores:")
+        print(f"  - Positive: {scores['pos']:.2f}")
+        print(f"  - Neutral: {scores['neu']:.2f}")
+        print(f"  - Negative: {scores['neg']:.2f}")
+        print("============================\n")
+        
+        if input("Do you want to analyze another comment (Y/N)? ").strip().lower() != 'y':
             print("Exiting the program. Goodbye!")
             break
 
-# Run the program
 if __name__ == '__main__':
     main()
