@@ -2,10 +2,10 @@ import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
 import re
 
-# Download necessary data
+# Download required NLTK data quietly
 nltk.download('vader_lexicon', quiet=True)
 
-# Initialize sentiment analyzer
+# Initialize Sentiment Analyzer
 sia = SentimentIntensityAnalyzer()
 
 # Precompile sarcasm patterns
@@ -24,24 +24,27 @@ SARCASM_PATTERNS = [
     )
 ]
 
-def analyze_sentiment(comment: str):
-    """Analyzes sentiment and detects sarcasm in a given comment."""
-    scores = sia.polarity_scores(comment)
+def detect_sarcasm(text: str) -> bool:
+    """Checks if the given text matches any sarcasm pattern."""
+    return any(pattern.search(text) for pattern in SARCASM_PATTERNS)
+
+def analyze_sentiment(text: str) -> dict:
+    """Analyzes sentiment and detects sarcasm in the given text."""
+    scores = sia.polarity_scores(text)
     compound = scores['compound']
-    
     sentiment = 'Positive' if compound >= 0.05 else 'Negative' if compound <= -0.05 else 'Neutral'
-    sarcasm = 'Sarcastic' if any(pattern.search(comment) for pattern in SARCASM_PATTERNS) else 'Not Sarcastic'
+    sarcasm = 'Sarcastic' if detect_sarcasm(text) else 'Not Sarcastic'
     
     return {
-        "Comment": comment,
+        "Comment": text,
         "Sentiment": sentiment,
         "Sarcasm Detection": sarcasm,
         "Sentiment Score": round(compound, 2),
-        "Scores": {k: round(v, 2) for k, v in scores.items() if k in ('pos', 'neu', 'neg')}
+        "Scores": {k: round(v, 2) for k in ('pos', 'neu', 'neg') if k in scores}
     }
 
 def main():
-    """Interactive loop for sentiment analysis."""
+    """Runs an interactive sentiment and sarcasm analyzer."""
     print("\nSentiment & Sarcasm Analyzer (Type 'exit' to quit)\n")
     
     while True:
