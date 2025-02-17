@@ -8,56 +8,66 @@ nltk.download('vader_lexicon', quiet=True)
 # Initialize Sentiment Analyzer
 sia = SentimentIntensityAnalyzer()
 
-# Precompile sarcasm patterns
+# Expanded sarcasm patterns with more context
 SARCASM_PATTERNS = [
     re.compile(pattern, re.IGNORECASE) for pattern in (
-        r'not\s+(great|good|bad|terrible|happy|sad|funny)',
-        r'yeah\s+right',
-        r'sure\s+thing',
-        r'totally\s+(agree|disagree|true|false)',
-        r'as\s+if',
-        r'oh\s+really',
-        r'wow\s+(amazing|incredible|fantastic)',
+        r'not\s+(great|good|bad|terrible|happy|sad|funny|helpful)',
+        r'yeah\s+right|sure\s+thing',
+        r'totally\s+(agree|disagree|true|false|believable)',
+        r'as\s+if|oh\s+really|obviously',
+        r'wow\s+(amazing|incredible|fantastic|horrible)',
         r'just\s+what\s+I\s+needed',
-        r'so\s+much\s+fun',
-        r'love\s+that\s+for\s+me'
+        r'so\s+much\s+fun|love\s+that\s+for\s+me',
+        r'what\s+a\s+(surprise|shock|joke)',
+        r'nothing\s+could\s+be\s+(better|worse)',
+        r'glad\s+to\s+hear\s+that'
     )
 ]
 
 def detect_sarcasm(text: str) -> bool:
-    """Checks if the given text matches any sarcasm pattern."""
+    """Checks if the given text matches sarcasm patterns."""
     return any(pattern.search(text) for pattern in SARCASM_PATTERNS)
+
+def adjust_for_sarcasm(sentiment: str, sarcasm: bool, compound_score: float) -> str:
+    """Adjusts sentiment classification if sarcasm is detected."""
+    if sarcasm and sentiment == 'Positive':
+        return 'Negative'  # Sarcastic positivity often implies negativity
+    elif sarcasm and sentiment == 'Neutral':
+        return 'Slightly Negative'  # Some sarcastic comments can be subtly negative
+    return sentiment
 
 def analyze_sentiment(text: str) -> dict:
     """Analyzes sentiment and detects sarcasm in the given text."""
     scores = sia.polarity_scores(text)
     compound = scores['compound']
     sentiment = 'Positive' if compound >= 0.05 else 'Negative' if compound <= -0.05 else 'Neutral'
-    sarcasm = 'Sarcastic' if detect_sarcasm(text) else 'Not Sarcastic'
     
+    sarcasm_detected = detect_sarcasm(text)
+    adjusted_sentiment = adjust_for_sarcasm(sentiment, sarcasm_detected, compound)
+
     return {
         "Comment": text,
-        "Sentiment": sentiment,
-        "Sarcasm Detection": sarcasm,
+        "Sentiment": adjusted_sentiment,
+        "Sarcasm Detection": "Sarcastic" if sarcasm_detected else "Not Sarcastic",
         "Sentiment Score": round(compound, 2),
-        "Scores": {k: round(v, 2) for k in ('pos', 'neu', 'neg') if k in scores}
+        "Scores": {k: round(v, 2) for k in ['pos', 'neu', 'neg'] if k in scores}
     }
 
 def main():
     """Runs an interactive sentiment and sarcasm analyzer."""
-    print("\nSentiment & Sarcasm Analyzer (Type 'exit' to quit)\n")
+    print("\n=== Sentiment & Sarcasm Analyzer ===\n(Type 'exit' to quit)\n")
     
     while True:
         comment = input("Enter a comment: ").strip()
         if comment.lower() == 'exit':
-            print("Goodbye!")
+            print("\nGoodbye!\n")
             break
         if not comment:
-            print("Please enter a valid comment.")
+            print("\n[!] Please enter a valid comment.\n")
             continue
         
         result = analyze_sentiment(comment)
-        print("\n============================")
+        print("\n=====================================")
         for key, value in result.items():
             if isinstance(value, dict):
                 print("  - Scores:")
@@ -65,10 +75,10 @@ def main():
                     print(f"    * {sub_key.capitalize()}: {sub_value}")
             else:
                 print(f"{key}: {value}")
-        print("============================\n")
+        print("=====================================\n")
         
         if input("Analyze another comment? (Y/N): ").strip().lower() != 'y':
-            print("Goodbye!")
+            print("\nGoodbye!\n")
             break
 
 if __name__ == '__main__':
