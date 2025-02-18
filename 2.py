@@ -3,12 +3,14 @@ from nltk.sentiment import SentimentIntensityAnalyzer
 import re
 
 # Download dependencies silently
-nltk.download('vader_lexicon', quiet=True)
+try:
+    nltk.download('vader_lexicon', quiet=True)
+    sia = SentimentIntensityAnalyzer()
+except Exception as e:
+    print(f"Error initializing sentiment analyzer: {e}")
+    exit(1)
 
-# Initialize the sentiment analyzer
-sia = SentimentIntensityAnalyzer()
-
-# Optimized sarcasm pattern using word boundaries and case-insensitive matching
+# Optimized sarcasm pattern
 SARCASM_PATTERN = re.compile(
     r'\b(?:not sure|oh great|yeah right|totally|just perfect|as if|sure thing|love that|so fun|what a joy|'
     r'fantastic|just wonderful|couldn\'t be better|amazing work|brilliant idea|so helpful)\b',
@@ -17,37 +19,45 @@ SARCASM_PATTERN = re.compile(
 
 def analyze_sentiment(comment: str):
     """Analyzes the sentiment of a comment and detects possible sarcasm."""
-    sentiment_scores = sia.polarity_scores(comment)
-    compound_score = sentiment_scores['compound']
-    
-    # Classify sentiment concisely
-    sentiment = (
-        'Positive' if compound_score >= 0.05 
-        else 'Negative' if compound_score <= -0.05 
-        else 'Neutral'
-    )
-    
-    # Detect sarcasm
-    sarcasm = bool(SARCASM_PATTERN.search(comment))
-    
-    return sentiment, sarcasm, compound_score
+    try:
+        sentiment_scores = sia.polarity_scores(comment)
+        compound_score = sentiment_scores.get('compound', 0)
+        
+        sentiment = (
+            'Positive' if compound_score >= 0.05 
+            else 'Negative' if compound_score <= -0.05 
+            else 'Neutral'
+        )
+        
+        sarcasm = bool(SARCASM_PATTERN.search(comment))
+        
+        return sentiment, sarcasm, compound_score
+    except Exception as e:
+        print(f"Error analyzing sentiment: {e}")
+        return 'Unknown', False, 0.0
 
 def main():
     """Runs the sentiment analysis loop for user input."""
     print("\nSentiment & Sarcasm Analyzer\n" + "=" * 30)
     
     while True:
-        comment = input("\nEnter a comment (or type 'exit' to quit): ").strip()
-        if comment.lower() == 'exit':
+        try:
+            comment = input("\nEnter a comment (or type 'exit' to quit): ").strip()
+            if comment.lower() == 'exit':
+                break
+            if not comment:
+                print("Empty input detected. Please enter a valid comment.")
+                continue
+            
+            sentiment, sarcasm, score = analyze_sentiment(comment)
+            print(f"\n{'-' * 34}\nComment: {comment}\nSentiment: {sentiment}\n"
+                  f"Sarcasm Detection: {'Yes' if sarcasm else 'No'}\n"
+                  f"Sentiment Score: {score:.2f}\n{'-' * 34}")
+        except KeyboardInterrupt:
+            print("\nUser interrupted. Exiting the program.")
             break
-        if not comment:
-            print("Empty input detected. Please enter a valid comment.")
-            continue
-        
-        sentiment, sarcasm, score = analyze_sentiment(comment)
-        print(f"\n{'-' * 34}\nComment: {comment}\nSentiment: {sentiment}\n"
-              f"Sarcasm Detection: {'Yes' if sarcasm else 'No'}\n"
-              f"Sentiment Score: {score:.2f}\n{'-' * 34}")
+        except Exception as e:
+            print(f"Unexpected error: {e}")
     
     print("Exiting the program. Goodbye!")
 
