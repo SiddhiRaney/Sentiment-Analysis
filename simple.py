@@ -1,17 +1,25 @@
 import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
 
-# Download necessary dataset
-nltk.download('vader_lexicon')
+# Ensure the necessary dataset is available
+nltk.download('vader_lexicon', quiet=True)
 
-# Initialize Sentiment Analyzer
-sia = SentimentIntensityAnalyzer()
+class SentimentAnalyzer:
+    """A simple wrapper around NLTK's SentimentIntensityAnalyzer."""
+    
+    def __init__(self):
+        self.sia = SentimentIntensityAnalyzer()
 
-# Sample text
-text = "I love coding, it's amazing!"
+    def analyze(self, text):
+        """Returns sentiment scores for the given text."""
+        return self.sia.polarity_scores(text)
 
-# Perform sentiment analysis
-sentiment_score = sia.polarity_scores(text)
-
-# Output the results
-print(sentiment_score)
+if __name__ == "__main__":
+    analyzer = SentimentAnalyzer()
+    sample_text = "I love coding, it's amazing!"
+    
+    # Perform sentiment analysis
+    result = analyzer.analyze(sample_text)
+    
+    # Display results
+    print(f"Sentiment Analysis: {result}")
