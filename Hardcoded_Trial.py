@@ -47,7 +47,23 @@ if __name__ == "__main__":
         "I love coding, it's amazing!",             # Positive
         "I hate bugs, they ruin everything.",       # Negative
         "Oh great, another bug to fix!",           # Sarcastic
-        "This is a regular sentence with no bias." # Neutral
+        "This is a regular sentence with no bias.", # Neutral
+        "Absolutely fantastic experience!",        # Positive
+        "I am extremely disappointed with this.",  # Negative
+        "Yeah, right, that was super helpful!",    # Sarcastic
+        "I feel okay about this situation.",       # Neutral
+        "What a wonderful day to be alive!",       # Positive
+        "This is the worst thing ever.",           # Negative
+        "Oh sure, because that worked so well last time.", # Sarcastic
+        "The book was neither good nor bad.",      # Neutral
+        "Best decision I have ever made!",         # Positive
+        "I regret ever doing this.",               # Negative
+        "Wow, such a brilliant idea... not!",      # Sarcastic
+        "It's just another normal day.",          # Neutral
+        "Life is beautiful and full of joy!",      # Positive
+        "Nothing ever goes right for me.",         # Negative
+        "Oh fantastic, another meeting at 7 AM.", # Sarcastic
+        "Meh, it's just fine.",                    # Neutral
     ]
     
     analyzer = SentimentAnalyzer()
