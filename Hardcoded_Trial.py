@@ -42,28 +42,56 @@ class SentimentAnalyzer:
             return "Neutral 😐"
 
 if __name__ == "__main__":
-    # Sample texts for testing different sentiment cases
+    # Expanded list with 25 additional samples
     sample_texts = [
-        "I love coding, it's amazing!",             # Positive
-        "I hate bugs, they ruin everything.",       # Negative
-        "Oh great, another bug to fix!",           # Sarcastic
-        "This is a regular sentence with no bias.", # Neutral
-        "Absolutely fantastic experience!",        # Positive
-        "I am extremely disappointed with this.",  # Negative
-        "Yeah, right, that was super helpful!",    # Sarcastic
-        "I feel okay about this situation.",       # Neutral
-        "What a wonderful day to be alive!",       # Positive
-        "This is the worst thing ever.",           # Negative
-        "Oh sure, because that worked so well last time.", # Sarcastic
-        "The book was neither good nor bad.",      # Neutral
-        "Best decision I have ever made!",         # Positive
-        "I regret ever doing this.",               # Negative
-        "Wow, such a brilliant idea... not!",      # Sarcastic
-        "It's just another normal day.",          # Neutral
-        "Life is beautiful and full of joy!",      # Positive
-        "Nothing ever goes right for me.",         # Negative
-        "Oh fantastic, another meeting at 7 AM.", # Sarcastic
-        "Meh, it's just fine.",                    # Neutral
+        "I love coding, it's amazing!",             
+        "I hate bugs, they ruin everything.",       
+        "Oh great, another bug to fix!",           
+        "This is a regular sentence with no bias.", 
+        "Absolutely fantastic experience!",        
+        "I am extremely disappointed with this.",  
+        "Yeah, right, that was super helpful!",    
+        "I feel okay about this situation.",       
+        "What a wonderful day to be alive!",       
+        "This is the worst thing ever.",           
+        "Oh sure, because that worked so well last time.", 
+        "The book was neither good nor bad.",      
+        "Best decision I have ever made!",         
+        "I regret ever doing this.",               
+        "Wow, such a brilliant idea... not!",      
+        "It's just another normal day.",          
+        "Life is beautiful and full of joy!",      
+        "Nothing ever goes right for me.",         
+        "Oh fantastic, another meeting at 7 AM.", 
+        "Meh, it's just fine.",                    
+        "My heart is filled with love and happiness!",  
+        "The food was absolutely terrible.",  
+        "Oh sure, because I totally wanted my coffee spilled on me.",  
+        "The movie was incredibly boring, I almost fell asleep.",  
+        "You are the best friend I could ever ask for!",  
+        "Oh wow, another traffic jam, just what I needed!",  
+        "The sunset was breathtaking, what a sight!",  
+        "I can’t believe I waited this long for such a terrible service.",  
+        "Oh yeah, because standing in line for hours is so much fun!",  
+        "I’m feeling super productive today!",  
+        "Everything is falling apart in my life right now.",  
+        "Oh joy, another power cut during my favorite show!",  
+        "This app is so intuitive and easy to use!",  
+        "I’m extremely frustrated with how things turned out.",  
+        "Oh yes, because everyone loves getting ignored.",  
+        "The new update made this game even better!",  
+        "Wow, that’s exactly what I wanted to hear... not!",  
+        "I’m so grateful for all the opportunities in my life!",  
+        "This is the most ridiculous thing I’ve ever seen.",  
+        "Oh perfect, another deadline moved up!",  
+        "The concert was an unforgettable experience!",  
+        "Why does everything have to be so difficult?",  
+        "Oh splendid, more work to do over the weekend!",  
+        "I’m feeling incredibly motivated today!",  
+        "I wish I never had to deal with this again.",  
+        "Oh yes, because technical errors are my favorite thing ever.",  
+        "The kindness of strangers always restores my faith in humanity.",  
+        "This is hands down the worst customer service I’ve ever experienced.",  
     ]
     
     analyzer = SentimentAnalyzer()
