@@ -42,7 +42,7 @@ class SentimentAnalyzer:
             return "Neutral 😐"
 
 if __name__ == "__main__":
-    # Expanded list with 25 additional samples
+    # Initial sample texts
     sample_texts = [
         "I love coding, it's amazing!",             
         "I hate bugs, they ruin everything.",       
@@ -93,9 +93,46 @@ if __name__ == "__main__":
         "The kindness of strangers always restores my faith in humanity.",  
         "This is hands down the worst customer service I’ve ever experienced.",  
     ]
-    
+
+    # Additional hardcoded examples
+    extra_texts = [
+        "Oh wonderful, another lecture on things I already know.",
+        "I just love waiting in long queues for hours!",
+        "Fantastic, my code compiled with zero errors on the first try... wait, what?",
+        "Oh great, my WiFi disconnected right before I submitted my assignment.",
+        "Why do printers always decide to break when you need them the most?",
+        "Wow, I definitely needed that extra spicy sauce in my eyes.",
+        "Oh look, my phone's battery is at 1% just when I need GPS the most!",
+        "I finally finished debugging after five hours, turns out it was a missing semicolon.",
+        "Absolutely thrilled to be stuck in traffic on my way to an important meeting!",
+        "Oh sure, let's all pretend like deadlines don't exist!",
+        "What a magnificent time to realize I left my wallet at home.",
+        "I just love how every single app needs an update at the same time.",
+        "Waking up to 50 unread emails is exactly what I needed today.",
+        "My dog decided my new shoes were his chew toy. How thoughtful!",
+        "So nice of my alarm clock to take the day off without informing me.",
+        "Oh fantastic, my laptop decided to restart right in the middle of my work.",
+        "I spent an hour cooking only to realize I forgot to add salt.",
+        "Oh joy, another software update that changes everything for no reason.",
+        "Because nothing says ‘good morning’ like stepping on a Lego.",
+        "I love how my coffee spills only when I wear white clothes.",
+        "Wow, another day of pretending like I have my life together.",
+        "Oh look, my meeting just got extended by another hour. Exactly what I wanted!",
+        "My neighbors have decided that 2 AM is the perfect time for karaoke practice.",
+        "Nothing feels better than finally understanding a concept right before the exam ends.",
+        "Why does my brain decide to remind me of embarrassing moments from 10 years ago?",
+        "Oh sure, because hitting ‘remind me tomorrow’ on updates always works out.",
+        "I just love how my cat decides my laptop keyboard is the best nap spot.",
+        "Oh yes, I definitely wanted my smoothie to explode in the blender today.",
+        "Because nothing screams ‘productivity’ like accidentally deleting hours of work.",
+        "Oh perfect, my phone fell face-first on concrete. Let’s check the damage together!"
+    ]
+
+    # Combine both lists
+    sample_texts.extend(extra_texts)
+
     analyzer = SentimentAnalyzer()
-    
+
     # Analyze each text and display results
     for text in sample_texts:
         result = analyzer.analyze(text)
