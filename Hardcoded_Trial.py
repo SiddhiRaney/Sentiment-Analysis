@@ -125,7 +125,20 @@ if __name__ == "__main__":
         "I just love how my cat decides my laptop keyboard is the best nap spot.",
         "Oh yes, I definitely wanted my smoothie to explode in the blender today.",
         "Because nothing screams ‘productivity’ like accidentally deleting hours of work.",
-        "Oh perfect, my phone fell face-first on concrete. Let’s check the damage together!"
+        "Oh perfect, my phone fell face-first on concrete. Let’s check the damage together!",
+        "Oh brilliant, my earphones decided to tangle themselves again.",
+        "Wow, my internet is so fast, I could send a letter quicker than this.",
+        "I just love how my laptop crashes at the perfect moment.",
+        "Oh sure, waking up early on a Sunday is exactly what I wanted.",
+        "Fantastic, my phone updated overnight and now nothing works!",
+        "Why does my charger only work when I hold it at a weird angle?",
+        "Oh great, my ice cream melted before I could even take a bite.",
+        "I love how my pet ignores me until it’s dinner time.",
+        "Oh sure, rain starts pouring the moment I step outside.",
+        "Wow, I definitely needed that unexpected pop quiz today.",
+        "Oh fantastic, my printer ran out of ink right before I submitted my report.",
+        "Because nothing says ‘fun’ like losing my progress on a document I forgot to save.",
+        "Oh yes, my phone’s autocorrect always knows exactly what I meant to type."
     ]
 
     # Combine both lists
