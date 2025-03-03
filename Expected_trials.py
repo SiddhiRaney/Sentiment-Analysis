@@ -106,7 +106,21 @@ if __name__ == "__main__":
         "Oh joy, another software update that changes everything for no reason.",  # Sarcastic 😏
         "Because nothing says ‘good morning’ like stepping on a Lego.",  # Sarcastic 😏
     ]
-
+    """additional_texts = [
+    "Winning this award is a dream come true!",  # Positive 😊
+    "I can't believe how terrible this service is.",  # Negative 😞
+    "Oh fantastic, yet another delayed flight!",  # Sarcastic 😏
+    "Nothing special, just another day.",  # Neutral 😐
+    "Finally, all my hard work is paying off!",  # Positive 😊
+    "This is the most infuriating thing ever.",  # Negative 😞
+    "Oh sure, because getting stuck in the rain is exactly what I wanted!",  # Sarcastic 😏
+    "It was an okay experience, nothing too exciting.",  # Neutral 😐
+    "I’m absolutely in love with this!",  # Positive 😊
+    "I wish I had never come here.",  # Negative 😞
+    "Oh brilliant, now my coffee is all over my laptop!",  # Sarcastic 😏
+    "It doesn't really matter to me.",  # Neutral 😐
+    "Every moment spent here has been magical.", 
+"""
     analyzer = SentimentAnalyzer()
 
     # Analyze each text and display results
