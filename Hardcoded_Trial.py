@@ -105,6 +105,56 @@ if __name__ == "__main__":
         "What a magnificent time to realize I left my wallet at home.",  # Sarcastic 😏
         "Oh joy, another software update that changes everything for no reason.",  # Sarcastic 😏
         "Because nothing says ‘good morning’ like stepping on a Lego.",  # Sarcastic 😏
+        "Oh wow, another meeting that could have been an email? What a delightful surprise!" # Sarcastic 😏
+
+"Fantastic! My laptop decided to restart for updates right before my presentation." # Sarcastic 😏
+
+"Oh, you texted me back after three days? Must have been SO hard to type ‘okay’." # Sarcastic 😏
+
+"What an amazing time for my internet to go out—right in the middle of an important upload!" # Sarcastic 😏
+
+"Because nothing makes me feel more alive than waking up five minutes before my alarm." # Sarcastic 😏
+
+"Oh great, I just love when autocorrect turns my normal sentence into complete nonsense." # Sarcastic 😏
+
+"Yes, please keep honking at traffic—I’m sure it will magically make the cars disappear!" # Sarcastic 😏
+
+"Oh sure, let’s schedule maintenance at peak hours. Genius!" # Sarcastic 😏
+
+"What a perfect day for my umbrella to break in the middle of a downpour." # Sarcastic 😏
+
+"Amazing! My headphones tangled themselves while sitting perfectly still in my bag." # Sarcastic 😏
+
+"Oh look, the ‘skip ad’ button appears just as the ad is about to end. How convenient!" # Sarcastic 😏
+
+"Yes, I’d love to hear about your vacation while I sit here drowning in work!" # Sarcastic 😏
+
+"Because nothing makes traffic more enjoyable than the guy who cuts in last minute." # Sarcastic 😏
+
+"Oh wow, my phone fell screen-down. I bet it’s totally fine. No cracks at all!" # Sarcastic 😏
+
+"Amazing! I spilled my drink exactly where I was trying to avoid spilling it." # Sarcastic 😏
+
+"What a beautiful time for my car to run out of fuel—right in the middle of nowhere." # Sarcastic 😏
+
+"Oh look, my laptop battery is at 5% and my charger is conveniently in another room." # Sarcastic 😏
+
+"Yes, let’s wait in line for 30 minutes just to be told ‘we’re out of stock’!" # Sarcastic 😏
+
+"How exciting! Another ‘urgent’ email that could have been a two-sentence message." # Sarcastic 😏
+
+"Oh joy, my favorite app just updated and now nothing works like it used to." # Sarcastic 😏
+
+"Because nothing makes a Monday morning better than spilling coffee on my shirt." # Sarcastic 😏
+
+"Oh great, my Wi-Fi slowed down the moment I actually needed it to work." # Sarcastic 😏
+
+"Yes, please explain the joke to me. I totally didn’t get it the first time." # Sarcastic 😏
+
+"What a fantastic time for my phone alarm to decide not to go off!" # Sarcastic 😏
+
+"Oh sure, let’s change all the grocery store aisles around just when I finally memorized them!" # Sarcastic 😏
+        
     ]
 
     analyzer = SentimentAnalyzer()
