@@ -15,27 +15,23 @@ def load_sarcasm_keywords():
 def analyze_sentiment(text, sentiment_model, sarcasm_keywords):
     """Analyze sentiment and detect sarcasm."""
     try:
-        sentiment_result = sentiment_model(text)[0]
-        sentiment_label, sentiment_score = sentiment_result['label'], sentiment_result['score']
+        result = sentiment_model(text)[0]
+        label, score = result['label'], result['score']
         
-        # Determine tone
-        tone = "Calm"
-        if sentiment_label == "POSITIVE":
-            tone = "Excited" if sentiment_score > 0.9 else "Happy"
-        elif sentiment_label == "NEGATIVE":
-            tone = "Angry" if sentiment_score > 0.9 else "Upset"
-        elif 0.4 < sentiment_score < 0.6:
-            tone = "Neutral"
+        tone = "Neutral"
+        if label == "POSITIVE":
+            tone = "Excited" if score > 0.9 else "Happy"
+        elif label == "NEGATIVE":
+            tone = "Angry" if score > 0.9 else "Upset"
         
-        # Sarcasm detection
         sarcasm = "Sarcastic" if any(word in text.lower() for word in sarcasm_keywords) else "Not Sarcastic"
         
         return {
             "comment": text,
-            "sentiment": sentiment_label,
+            "sentiment": label,
             "tone": tone,
             "sarcasm": sarcasm,
-            "score": round(sentiment_score, 2)
+            "score": round(score, 2)
         }
     except Exception as e:
         raise RuntimeError(f"Error analyzing sentiment: {e}")
