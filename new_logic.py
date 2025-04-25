@@ -1,9 +1,11 @@
 import torch
+import re
 from transformers import pipeline
 
 # Constants
 MAX_TEXT_LENGTH = 512
 SARCASM_KEYWORDS = {"totally", "yeah right", "not sure", "obviously", "sure thing"}
+SARCASM_PATTERN = re.compile(r"\b(" + "|".join(re.escape(word) for word in SARCASM_KEYWORDS) + r")\b", re.IGNORECASE)
 
 def load_sentiment_model():
     """Load transformer-based sentiment analysis model."""
@@ -18,12 +20,13 @@ def analyze_sentiment(text, model):
         result = model(text, truncation=True, max_length=MAX_TEXT_LENGTH)[0]
         label, score = result['label'], round(result['score'], 2)
 
-        tone = {
-            "POSITIVE": "Excited" if score > 0.9 else "Happy",
-            "NEGATIVE": "Angry" if score > 0.9 else "Upset"
-        }.get(label, "Neutral")
+        tone = "Neutral"
+        if label == "POSITIVE":
+            tone = "Excited" if score > 0.9 else "Happy"
+        elif label == "NEGATIVE":
+            tone = "Angry" if score > 0.9 else "Upset"
 
-        sarcasm = "Sarcastic" if any(kw in text for kw in SARCASM_KEYWORDS) else "Not Sarcastic"
+        sarcasm = "Sarcastic" if SARCASM_PATTERN.search(text) else "Not Sarcastic"
 
         return {
             "Comment": text,
@@ -37,29 +40,27 @@ def analyze_sentiment(text, model):
 
 def main():
     """Interactive sentiment analysis console."""
-    print("\nAI Sentiment Analysis Tool (Type 'exit' to quit)\n")
+    print("\n🧠 AI Sentiment Analysis Tool (type 'exit' to quit)\n")
     model = load_sentiment_model()
 
     while True:
         raw_text = input("Enter a comment: ").strip()
-        text = raw_text.lower()
-
-        if text == "exit":
-            print("Exiting... Goodbye!")
-            break
-        if not text:
+        if not raw_text:
             print("Invalid input. Please enter a valid comment.")
             continue
+        if raw_text.lower() == "exit":
+            print("Exiting... Goodbye!")
+            break
 
         try:
-            result = analyze_sentiment(text, model)
-            print("\nAnalysis Result:")
+            result = analyze_sentiment(raw_text, model)
+            print("\n📊 Analysis Result:")
             for k, v in result.items():
                 print(f"{k}: {v}")
         except Exception as e:
-            print(f"Unexpected Error: {e}")
+            print(f"⚠️ Error: {e}")
 
-        again = input("Analyze another? (Y/N): ").strip().lower()
+        again = input("\nAnalyze another? (Y/N): ").strip().lower()
         if again != 'y':
             print("Goodbye!")
             break
