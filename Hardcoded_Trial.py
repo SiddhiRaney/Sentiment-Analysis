@@ -19,6 +19,5 @@ if __name__ == "__main__":
     for idx, text in enumerate(sample_texts, start=1):
         result = analyzer.analyze(text)
         sentiment = result.get('sentiment', 'Unknown')
-        print(f"{idx}. Text: {text}")
-        print(f"   Sentiment: {sentiment}")
-        print(f"   Scores: {result}\n")
+
+        print(f"{idx}. Text: {text}\n   Sentiment: {sentiment}\n   Scores: {result}\n")
