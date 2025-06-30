@@ -1,39 +1,27 @@
-import re
-import nltk
-from nltk.sentiment import SentimentIntensityAnalyzer
+class Solution {
+public:
+    int findLHS(vector<int>& v) {
+        unordered_map<int, int> m; // stores frequency of each element
+        const int n = v.size();    // size of the input vector
 
-# Setup
-nltk.download('vader_lexicon', quiet=True)
-sia = SentimentIntensityAnalyzer()
+        if (n == 1) return 0; // only one element, cannot form harmonious subsequence
 
-# Precompiled sarcasm patterns
-SARCASTIC_PATTERNS = [re.compile(p, re.IGNORECASE) for p in [
-    r"\bnot\b.*\bgood\b", r"\bsure\b", r"yeah right", r"totally\b.*(awesome|great)"
-]]
+        // Step 1: Build frequency map
+        for (int num : v) {
+            m[num]++; // count frequency of each number
+        }
 
-def analyze_sentiment(text):
-    """Analyze sentiment, tone, sarcasm, and compound score."""
-    scores = sia.polarity_scores(text)
-    c = round(scores['compound'], 2)
-    sentiment = 'Positive' if c >= 0.05 else 'Negative' if c <= -0.05 else 'Neutral'
-    
-    pos, neg, neu = scores['pos'], scores['neg'], scores['neu']
-    tone = ('Excited' if pos >= 0.7 else 'Angry' if neg >= 0.7 
-            else 'Calm' if neu >= 0.9 else 'Happy' if pos > neg else 'Sad')
+        if (m.size() == 1) return 0; // only one unique element, return 0
 
-    sarcasm = 'Sarcastic' if any(p.search(text) for p in SARCASTIC_PATTERNS) else 'Not Sarcastic'
-    
-    return sentiment, tone, sarcasm, c
+        int res = 0; // stores the maximum length of harmonious subsequence
 
-if __name__ == '__main__':
-    while True:
-        text = input("Enter text ('exit' to quit): ").strip()
-        if text.lower() == 'exit':
-            print('Goodbye!')
-            break
-        if not text:
-            print('Please enter valid text.')
-            continue
+        // Step 2: Check for each number if num-1 exists
+        for (auto& [num, cnt] : m) {
+            if (m.count(num - 1)) { // if neighbor (num-1) exists
+                res = max(res, cnt + m[num - 1]); // update result if longer subsequence found
+            }
+        }
 
-        sent, tone, sarcasm, score = analyze_sentiment(text)
-        print(f"Sentiment: {sent}, Tone: {tone}, Sarcasm: {sarcasm}, Score: {score}\n")
+        return res; // final result
+    }
+};
