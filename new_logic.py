@@ -1,6 +1,6 @@
 import re
 from transformers import pipeline
-from typing import Dict
+from typing import Dict, Union
 
 # Constants
 MAX_LEN = 512
@@ -25,7 +25,7 @@ def get_tone(label: str, score: float) -> str:
         return "Angry" if score > 0.9 else "Upset"
     return "Neutral"
 
-def analyze(text: str, model) -> Dict[str, str | float]:
+def analyze(text: str, model) -> Dict[str, Union[str, float]]:
     """Perform sentiment and sarcasm analysis."""
     try:
         res = model(text)[0]
