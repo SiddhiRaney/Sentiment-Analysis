@@ -8,10 +8,7 @@ SARCASM_RE = re.compile(r"\b(totally|yeah right|not sure|obviously|sure thing)\b
 
 def load_model():
     """Load the sentiment analysis model."""
-    try:
-        return pipeline("sentiment-analysis", truncation=True, max_length=MAX_LEN)
-    except Exception as e:
-        raise RuntimeError(f"Model loading failed: {e}")
+    return pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
 
 def is_sarcastic(text: str) -> bool:
     """Check for sarcasm using regex."""
@@ -19,36 +16,40 @@ def is_sarcastic(text: str) -> bool:
 
 def get_tone(label: str, score: float) -> str:
     """Determine emotional tone from sentiment and confidence score."""
-    if label == "POSITIVE":
-        return "Excited" if score > 0.9 else "Happy"
-    if label == "NEGATIVE":
-        return "Angry" if score > 0.9 else "Upset"
+    tones = {
+        "POSITIVE": ("Happy", "Excited"),
+        "NEGATIVE": ("Upset", "Angry"),
+        "NEUTRAL": ("Neutral", "Neutral")
+    }
+    if label in tones:
+        return tones[label][1] if score > 0.9 else tones[label][0]
     return "Neutral"
 
 def analyze(text: str, model) -> Dict[str, Union[str, float]]:
     """Perform sentiment and sarcasm analysis."""
-    try:
-        res = model(text)[0]
-        label, score = res["label"], round(res["score"], 2)
-        return {
-            "Comment": text,
-            "Sentiment": label,
-            "Tone": get_tone(label, score),
-            "Sarcasm": "Sarcastic" if is_sarcastic(text) else "Not Sarcastic",
-            "Score": score
-        }
-    except Exception as e:
-        raise RuntimeError(f"Analysis failed: {e}")
+    res = model(text, truncation=True, max_length=MAX_LEN)[0]
+    label, score = res["label"].upper(), round(res["score"], 2)
+    
+    return {
+        "Comment": text,
+        "Sentiment": label,
+        "Tone": get_tone(label, score),
+        "Sarcasm": "Sarcastic" if is_sarcastic(text) else "Not Sarcastic",
+        "Score": score
+    }
 
 def main():
     """Interactive CLI for sentiment analysis."""
     print("\n🧠 Sentiment Analyzer (type 'exit' to quit)\n")
-    model = load_model()
+    try:
+        model = load_model()
+    except Exception as e:
+        print(f"⚠️ Model loading failed: {e}")
+        return
 
     while True:
         text = input("Enter a comment: ").strip()
         if text.lower() == "exit":
-            print("👋 Goodbye!")
             break
         if not text:
             print("⚠️ Please enter a non-empty comment.")
@@ -63,8 +64,9 @@ def main():
             print(f"⚠️ Error: {e}")
 
         if input("\nAnalyze another? (Y/N): ").strip().lower() != 'y':
-            print("👋 Goodbye!")
             break
+
+    print("👋 Goodbye!")
 
 if __name__ == "__main__":
     main()
