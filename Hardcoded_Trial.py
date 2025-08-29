@@ -16,8 +16,10 @@ if __name__ == "__main__":
 
     analyzer = SentimentAnalyzer()  # Initialize once
 
-    for idx, text in enumerate(sample_texts, start=1):
-        result = analyzer.analyze(text)
-        sentiment = result.get('sentiment', 'Unknown')
+    # Batch analyze all texts
+    results = [analyzer.analyze(text) for text in sample_texts]
 
+    # Display results
+    for idx, (text, result) in enumerate(zip(sample_texts, results), start=1):
+        sentiment = result.get("sentiment", "Unknown")
         print(f"{idx}. Text: {text}\n   Sentiment: {sentiment}\n   Scores: {result}\n")
