@@ -4,14 +4,15 @@ public:
         unordered_map<int, int> freq;
         int maxLen = 0;
 
+        // Count frequencies of each number
         for (int num : nums) {
-            int cnt = ++freq[num];  // increment frequency
+            freq[num]++;
+        }
 
-            if (freq.count(num - 1)) {
-                maxLen = max(maxLen, cnt + freq[num - 1]);
-            }
+        // Check pairs of consecutive numbers
+        for (auto& [num, count] : freq) {
             if (freq.count(num + 1)) {
-                maxLen = max(maxLen, cnt + freq[num + 1]);
+                maxLen = max(maxLen, count + freq[num + 1]);
             }
         }
 
