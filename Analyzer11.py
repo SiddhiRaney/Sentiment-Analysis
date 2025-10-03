@@ -10,27 +10,31 @@ SARCASM_PATTERNS = [
     re.compile(r"as if", re.IGNORECASE),
 ]
 
-# Lazy load sentiment pipeline
-_sentiment = None
-def get_sentiment():
-    global _sentiment
-    if _sentiment is None:
-        _sentiment = pipeline("sentiment-analysis")
-    return _sentiment
+# Lazy load pipeline (singleton pattern)
+_sentiment_pipeline = None
+def get_sentiment_pipeline():
+    global _sentiment_pipeline
+    if _sentiment_pipeline is None:
+        _sentiment_pipeline = pipeline("sentiment-analysis")
+    return _sentiment_pipeline
 
 
 def analyze_sentiment(comment: str) -> Dict[str, Any]:
     """Analyze sentiment, tone, and sarcasm in a comment."""
     try:
-        res = get_sentiment()(comment)[0]
-        lbl, scr = res["label"], res["score"]
+        result = get_sentiment_pipeline()(comment)[0]
+        label, score = result["label"], result["score"]
 
         # Sentiment mapping
-        sentiment = "Positive" if lbl == "POSITIVE" else "Negative"
+        sentiment = "Positive" if label.upper() == "POSITIVE" else "Negative"
 
-        # Tone mapping
-        tone = "Excited" if (sentiment == "Positive" and scr > 0.9) else \
-               "Angry" if (sentiment == "Negative" and scr > 0.9) else "Neutral"
+        # Tone mapping (use thresholds for clarity)
+        if sentiment == "Positive" and score > 0.9:
+            tone = "Excited"
+        elif sentiment == "Negative" and score > 0.9:
+            tone = "Angry"
+        else:
+            tone = "Neutral"
 
         # Sarcasm detection
         sarcasm = "Sarcastic" if any(p.search(comment) for p in SARCASM_PATTERNS) else "Not Sarcastic"
@@ -39,7 +43,7 @@ def analyze_sentiment(comment: str) -> Dict[str, Any]:
             "sentiment": sentiment,
             "tone": tone,
             "sarcasm": sarcasm,
-            "score": {"label": lbl, "score": round(scr, 2)},
+            "score": {"label": label, "score": round(score, 2)},
         }
 
     except Exception as e:
@@ -51,13 +55,13 @@ def display_results(comment: str, result: Dict[str, Any]) -> None:
     print("\n" + "-" * 50)
     print("Comment:\n" + textwrap.fill(comment, width=50) + "\n")
 
-    for k, v in result.items():
-        if isinstance(v, dict):
+    for key, value in result.items():
+        if isinstance(value, dict):
             print("Score Breakdown:")
-            for sub_k, sub_v in v.items():
+            for sub_k, sub_v in value.items():
                 print(f"  {sub_k.capitalize()}: {sub_v}")
         else:
-            print(f"{k.capitalize()}: {v}")
+            print(f"{key.capitalize()}: {value}")
     print("-" * 50 + "\n")
 
 
@@ -65,16 +69,16 @@ def main() -> None:
     """Interactive CLI for sentiment analysis."""
     print("Welcome to the Sentiment Analysis Tool!")
     while True:
-        c = input("Enter a comment (or type 'exit' to quit): ").strip()
-        if not c:
+        comment = input("Enter a comment (or type 'exit' to quit): ").strip()
+        if not comment:
             print("⚠️ Please enter a valid comment.")
             continue
-        if c.lower() == "exit":
+        if comment.lower() == "exit":
             print("Exiting...")
             break
 
-        res = analyze_sentiment(c)
-        display_results(c, res)
+        result = analyze_sentiment(comment)
+        display_results(comment, result)
 
 
 if __name__ == "__main__":
