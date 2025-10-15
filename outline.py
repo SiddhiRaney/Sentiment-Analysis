@@ -1,21 +1,24 @@
 from textblob import TextBlob
 import random
 
+NEUTRAL_EMOJIS = ["😐", "🤔", "🙃", "😶", "🧐"]
+NEUTRAL_MESSAGES = ["Neutral", "Mixed feelings", "Balanced view", "Could go either way", "Ambiguous"]
+
 def classify_sentiment(text):
     polarity = TextBlob(text).sentiment.polarity
     if polarity > 0:
-        return ("Positive", "😊")
-    elif polarity < 0:
-        return ("Negative", "😞")
-    else:
-        neutral_emojis = ["😐", "🤔", "🙃", "😶", "🧐"]
-        neutral_messages = ["Neutral", "Mixed feelings", "Balanced view", "Could go either way", "Ambiguous"]
-        return (random.choice(neutral_messages), random.choice(neutral_emojis))
+        return "Positive", "😊"
+    if polarity < 0:
+        return "Negative", "😞"
+    return random.choice(NEUTRAL_MESSAGES), random.choice(NEUTRAL_EMOJIS)
 
-if __name__ == "__main__":
-    text = input("Enter a sentence for sentiment analysis: ").strip()
-    if text:
+def main():
+        text = input("Enter a sentence for sentiment analysis: ").strip()
+        if not text:
+            print("No text provided. Please try again.")
+            return
         label, emoji = classify_sentiment(text)
         print(f"Sentiment: {label} {emoji}")
-    else:
-        print("No text provided. Please try again.")
+
+if __name__ == "__main__":
+    main()
