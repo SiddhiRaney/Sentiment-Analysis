@@ -10,16 +10,16 @@ if __name__ == "__main__":
         "My heart is filled with love and happiness!",
         "Oh joy, another software update that changes everything for no reason.",
         "I wish I never had to deal with this again.",
-        # ... (same as your remaining 90 texts)
         "Finally finished my to-do list!",
     ]
 
     analyzer = SentimentAnalyzer()  # Initialize once
 
     # Batch analyze all texts
-    results = [analyzer.analyze(text) for text in sample_texts]
+    results = analyzer.analyze_batch(sample_texts) if hasattr(analyzer, "analyze_batch") \
+              else [analyzer.analyze(text) for text in sample_texts]
 
     # Display results
-    for idx, (text, result) in enumerate(zip(sample_texts, results), start=1):
-        sentiment = result.get("sentiment", "Unknown")
+    for idx, (text, result) in enumerate(zip(sample_texts, results), 1):
+        sentiment = result.get("sentiment") or result.get("label") or "Unknown"
         print(f"{idx}. Text: {text}\n   Sentiment: {sentiment}\n   Scores: {result}\n")
